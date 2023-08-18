@@ -170,5 +170,5 @@ class BaseRepl:
             except KeyboardInterrupt:
                 print("\n🎹🎹Interrupt, opsie, let's move on!")
             except EOFError:
-                print("\nExiting REPL. Bye 👋🏻\n")
+                print("\nExiting REPL. Bye 👋 \n")
                 break
