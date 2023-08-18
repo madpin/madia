@@ -6,7 +6,8 @@
             "type": "python",
             "request": "launch",
             "module": "madia.cli",
-            "justMyCode": false
+            "justMyCode": false,
+            "logToFile": true
         },
         {
             "name": "Python: Debug Tests",

@@ -19,6 +19,8 @@ import logging
 
 from langchain.chains import LLMChain
 
+from madia.repl.utils import delete_stdout_content
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,7 +71,10 @@ def single_message(
         msgs.append(SystemMessage(content=system_message))
     msgs.append(HumanMessage(content=input_text))
     ans = llm.predict_messages(msgs)
-    return ans.content.strip()
+    ret = ans.content.strip()
+    if streaming:
+        delete_stdout_content(ret)
+    return ret
 
 
 # def buffer_window_message(

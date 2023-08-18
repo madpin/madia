@@ -4,6 +4,9 @@ import sys
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name, get_all_lexers
 from pygments.formatters import TerminalFormatter
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def detect_and_highlight_code(text):
@@ -28,6 +31,8 @@ def detect_and_highlight_code(text):
 
 
 def delete_stdout_content(content):
+    if not content:
+        return
     number_of_lines = content.count("\n")
 
     for line_no in range(number_of_lines):
@@ -62,23 +67,19 @@ def safe_shlex_split(text):
         return shlex.split(text + closest_char)
 
 
-def execute_command(command_str, options_tree):
-    commands = safe_shlex_split(command_str)
+# def extract_command_args(command, options_dict):
+#     commands = safe_shlex_split(command)
 
-    cur_tree = options_tree
-    fn = None  # Placeholder for our function
+#     cur_tree = options_dict
+#     fn = None  # Placeholder for our function
 
-    # Loop until we either find a callable or exhaust the commands list
-    for i, cmd in enumerate(commands):
-        if cmd not in cur_tree:
-            return f"Invalid command: {cmd}"
+#     # Loop until we either find a callable or exhaust the commands list
+#     for i, cmd in enumerate(commands):
+#         if cmd not in cur_tree:
+#             break
 
-        if callable(cur_tree[cmd]):
-            fn = cur_tree[cmd]
-            break  # We've found our function, stop here.
-        cur_tree = cur_tree[cmd]
+#         if callable(cur_tree[cmd]):
+#             break  # We've found our function, stop here.
+#         cur_tree = cur_tree[cmd]
 
-    if not fn:
-        return f"'{command_str}' does not map to a valid function."
-    args = commands[i + 1 :]  # Extract the remaining commands as arguments
-    return fn(" ".join(args))
+#     return (" ".join(commands[: i + 1])), (" ".join(commands[i + 1 :]))
