@@ -1,9 +1,10 @@
 [build-system]
 requires = ["flit"]
+
 build-backend = "flit.buildapi"
 
 [project]
-name = "py-project-toml"
+name = "madia"
 authors = [{ name = "Thiago MadPin", email = "madpin@gmail.com" }]
 description = "AI REPL Lab for some tests"
 readme = "README.md"
@@ -19,6 +20,16 @@ classifiers = [
 ]
 requires-python = ">=3.8.1"
 dynamic = ["version"]
+dependencies = [
+    "openai",
+    "pandas",
+    "langchain",
+    "nltk",
+    "tiktoken",
+    "PyYAML",
+    "prompt_toolkit",
+    "pygments",
+]
 
 [project.optional-dependencies]
 test = [
@@ -46,6 +57,10 @@ Documentation = "https://github.com/microsoft/python-package-template/tree/main#
 Source = "https://github.com/microsoft/python-package-template"
 Tracker = "https://github.com/microsoft/python-package-template/issues"
 
+[project.scripts]
+madia = "madia.cli:cli"
+
+
 [tool.flit.module]
 name = "madia"
 
@@ -56,7 +71,7 @@ recursive = true
 targets = "src"
 
 [tool.black]
-line-length = 120
+line-length = 88
 fast = true
 
 [tool.coverage.run]
