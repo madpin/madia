@@ -45,7 +45,7 @@ class BaseRepl:
             for arg in arguments[:-1]:
                 if callable(cur_tree):
                     continue
-                matching_key = next((k for k in cur_tree if k.lower() == arg), None)
+                matching_key = next((k for k in cur_tree if k.lower() in arg), None)
                 if isinstance(cur_tree, dict) and matching_key:
                     cur_tree = cur_tree[matching_key]
                 else:
@@ -57,19 +57,19 @@ class BaseRepl:
             # Check if the current level contains options (dict or list).
             if isinstance(cur_tree, dict):
                 # Special handling for dictionary values that are lists
-                matching_key = next((k for k in cur_tree if k.lower() == prefix), None)
+                matching_key = next((k for k in cur_tree if k.lower() in prefix), None)
                 if matching_key and isinstance(cur_tree[matching_key], list):
                     for option in cur_tree[matching_key]:
                         yield Completion(str(option), start_position=0)
                     return
 
                 # Regular handling for other dictionary values
-                options = [o for o in cur_tree if str(o).lower().startswith(prefix)]
+                options = [o for o in cur_tree if prefix in str(o).lower()]
                 for option in options:
                     yield Completion(str(option), start_position=-len(prefix))
 
             elif isinstance(cur_tree, list):
-                options = [o for o in cur_tree if str(o).lower().startswith(prefix)]
+                options = [o for o in cur_tree if prefix in str(o).lower()]
                 for option in options:
                     yield Completion(str(option), start_position=-len(prefix))
 
