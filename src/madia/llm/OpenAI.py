@@ -54,7 +54,7 @@ def search_llmmath(
         tools, llm, agent="zero-shot-react-description", verbose=True
     )
     ans = agent.run(input_text)
-    return ans
+    return ans.strip()
 
 
 def single_message(
@@ -69,7 +69,7 @@ def single_message(
         msgs.append(SystemMessage(content=system_message))
     msgs.append(HumanMessage(content=input_text))
     ans = llm.predict_messages(msgs)
-    return ans.content
+    return ans.content.strip()
 
 
 # def buffer_window_message(
@@ -131,7 +131,7 @@ class BufferedWindowMessage:
 
         ans = self.chain({"question": input_text})
         logger.debug(f"Open Ai Conversation: {ans}")
-        return ans["text"]
+        return ans["text"].strip()
 
 
 class BufferedSearchWindowMessage:
@@ -165,4 +165,4 @@ class BufferedSearchWindowMessage:
         ans = self_ask_with_search.run(input_text)
 
         # logger.debug(f"Open Ai Conversation: {ans}")
-        return ans
+        return ans.strip()

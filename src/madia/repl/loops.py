@@ -14,7 +14,7 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 def main_loop(options):
     completer = CustomCompleter(options)
-    history = FileHistory("repl_history.txt")
+    history = FileHistory("./logs/repl_hist.txt")
     session = PromptSession(
         message=">>> ",
         history=history,
@@ -32,6 +32,7 @@ def main_loop(options):
 
             try:
                 result = execute_command(user_input, options)
+                delete_stdout_content(result)
                 print(detect_and_highlight_code(result))
             except Exception as err:
                 print(f"Error: {err}")
@@ -43,7 +44,7 @@ def main_loop(options):
 
 
 def chat_gpt_loop(conversation_function):
-    history_ai = FileHistory("repl_history_chat_gpt_loop.txt")
+    history_ai = FileHistory("./logs/repl_hist_chat_gpt_loop.txt")
     session = PromptSession(
         message="Chat GPT > ",
         history=history_ai,
