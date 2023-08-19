@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import shlex
 from functools import lru_cache
 
@@ -9,15 +8,16 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.history import InMemoryHistory
 
+from madia.logger import LoggingMixin, get_logger
 from madia.repl.utils import delete_stdout_content
 from madia.repl.utils import \
     detect_and_highlight_code as detect_and_highlight_code_fn
 from madia.repl.utils import safe_shlex_split
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
-class BaseRepl:
+class BaseRepl(LoggingMixin):
     class CustomCompleter(Completer):
         def __init__(self, completion_tree):
             super().__init__()
@@ -169,7 +169,7 @@ class BaseRepl:
                     break
 
                 result = self.execute_command(command)
-
+                self.logger.debug(f"Command result pre formatter: {result}")
                 self.present_result(result)
 
             except KeyboardInterrupt:

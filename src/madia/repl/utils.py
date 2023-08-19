@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import contextlib
-import logging
 import re
 import shlex
 import sys
@@ -10,8 +9,6 @@ import threading
 from pygments import highlight
 from pygments.formatters import TerminalFormatter
 from pygments.lexers import get_all_lexers, get_lexer_by_name
-
-logger = logging.getLogger(__name__)
 
 
 def detect_and_highlight_code(text):

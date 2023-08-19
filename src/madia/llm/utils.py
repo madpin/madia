@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-import logging
 import os
 import string
 import sys
 from math import ceil
 
 from langchain.callbacks.base import BaseCallbackHandler
-from langchain.chat_models import ChatOpenAI
 
-logger = logging.getLogger(__name__)
+from madia.logger import get_logger
+
+logger = get_logger(__name__)
 
 
-class MyCustomSyncHandler(BaseCallbackHandler):
+class ShortProgressStringsHandler(BaseCallbackHandler):
     banner_lines = []
     prepend = "Data Arriving: "
     printing_line = ""
-    progress_bar = "🔁" + "." * 80
+    progress_bar = "🔁" + "." * 20
     PRINT_NO_TOKENS = 10
 
     def _clear_lines_below(self, lines_count: int):
@@ -58,6 +58,14 @@ class MyCustomSyncHandler(BaseCallbackHandler):
         lines_count = ceil((len(self.printing_line)) / os.get_terminal_size().columns)
 
         self._clear_lines_below(lines_count)
+
+
+class FileLoggerHandler(BaseCallbackHandler):
+    def on_llm_end(self, response, **kwargs) -> None:
+        logger.debug(response)
+
+    def on_chain_end(self, outputs, **kwargs) -> None:
+        logger.debug(outputs)
 
 
 def response_strip(text):

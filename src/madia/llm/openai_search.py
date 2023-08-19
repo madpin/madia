@@ -1,24 +1,24 @@
 from __future__ import annotations
 
-import logging
-
 from langchain.agents import AgentType, Tool, initialize_agent
 from langchain.chat_models import ChatOpenAI
 from langchain.utilities import GoogleSerperAPIWrapper
 
-from madia.llm.utils import response_strip
+from madia.llm.utils import FileLoggerHandler, response_strip
+from madia.logger import LoggingMixin, get_logger
 from madia.repl.utils import delete_stdout_content, temporary_stdout
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
-class BufferedSearchWindowMessage:
+class BufferedSearchWindowMessage(LoggingMixin):
     def __init__(self, open_ai_model="gpt-3.5-turbo", streaming=True):
         self.streaming = streaming
         self.llm = ChatOpenAI(
             model=open_ai_model,
             temperature=0.3,
             streaming=streaming,
+            callbacks=[FileLoggerHandler()],
         )
 
     def get_response(self, input_text, system_message=None):

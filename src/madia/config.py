@@ -28,5 +28,23 @@ def save_settings():
         ABS_SETTINGS_PATH,
         DynaBox(data).to_dict(),
         merge=False,
-        env="development",
+        env="dev",
     )
+
+
+def check_settings():
+    """Check if settings exist and load defaults if not"""
+    default_settings = {
+        "log_path": "~/.madia/logs",
+        "log_filename": "app.log",
+        "log_filename_full_fp": "app_fp.log",
+    }
+
+    new_key = False
+    for key, value in default_settings.items():
+        if not settings.get(key):
+            new_key = True
+            settings[key] = value
+
+    if new_key:
+        save_settings()

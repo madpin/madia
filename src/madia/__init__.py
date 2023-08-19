@@ -5,4 +5,8 @@
 """Python Package Template"""
 from __future__ import annotations
 
+from madia.config import check_settings
+
 __version__ = "0.0.4"
+
+check_settings()

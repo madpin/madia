@@ -14,9 +14,10 @@ from langchain.prompts import (ChatPromptTemplate, HumanMessagePromptTemplate,
                                MessagesPlaceholder,
                                SystemMessagePromptTemplate)
 
-from madia.llm.utils import MyCustomSyncHandler
+from madia.llm.utils import ShortProgressStringsHandler
+from madia.logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class BufferedWindowMessage:
@@ -26,7 +27,7 @@ class BufferedWindowMessage:
             model=open_ai_model,
             temperature=0.3,
             streaming=True,
-            callbacks=[MyCustomSyncHandler()],
+            callbacks=[ShortProgressStringsHandler()],
         )
 
         self.memory = ConversationTokenBufferMemory(
@@ -59,6 +60,7 @@ class BufferedWindowMessage:
             # if streaming
             # else [MyCustomSyncHandler()],
         )
+        logger.debug(self.chain)
 
         # with temporary_stdout():
         ret = self.chain({"question": input_text})
