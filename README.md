@@ -1,11 +1,52 @@
-# Python Project Template
+# MadIA - A Mostly Sane AI Assistant
+MadIA is yet another attempt to create an AI assistant that doesn't immediately try to take over the world.
 
-This project is a template for creating Python projects that follows the Python Standards declared in PEP 621. It uses a pyproject.yaml file to configure the project and Flit to simplify the build process and publish to PyPI. Flit simplifies the build and packaging process for Python projects by eliminating the need for separate setup.py and setup.cfg files. With Flit, you can manage all relevant configurations within the pyproject.toml file, streamlining development and promoting maintainability by centralizing project metadata, dependencies, and build specifications in one place.
+We make no guarantees that it won't go rogue at some point, but for now it seems mostly harmless.
+
+## Features
+- REPL interface to chat with AI models from OpenAI
+- Support for both chat and search models
+- Fancy autocomplete when typing commands
+- Configurable logging so you can see what MadIA is thinking
+- A whole 37 lines of code!
+
+
+## Getting Started
+Currently we didn't publish the library, but you can install it directly from GitHub:
+
+### Quick Install:
+```bash
+pip install 'madia @ git+https://github.com/madpin/madia'
+```
+
+Smart, ham! 😉
+
+But, because not everything are sooo simple, you'll need some environment variables
+setup in your environment:
+
+- OPENAI_API_KEY
+- SERPER_API_KEY
+
+### How to get them?
+
+- The Open AI one you can get [Here](https://platform.openai.com/account/api-keys)
+- The Serper one (helps with the searches) you can get [Here](https://serper.dev/)
+
 
 ## Demo:
 
 https://github.com/madpin/madia/assets/1045177/d0c7af24-6875-4548-9c4d-625314eec579
 
+Below, you can find some gibberish, that comes directly from the 🥁
+
+template that I've used to generate this library.
+
+Thanks Microsoft from this [great template](https://github.com/microsoft/python-package-template)!
+
+* Oww, forgot to mention, the last piece, about contribuition, is fully true, more than happy to have more people working in this project with me,
+😀
+
+---
 
 ## Project Organization
 
