@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import os
 import sys
@@ -59,6 +61,6 @@ class BufferedWindowMessage:
         )
 
         # with temporary_stdout():
-        ans = self.chain({"question": input_text})
+        ret = self.chain({"question": input_text})
 
-        return ans["text"]
+        return ret["text"]

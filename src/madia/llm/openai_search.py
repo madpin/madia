@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 from langchain.agents import AgentType, Tool, initialize_agent
@@ -36,6 +38,6 @@ class BufferedSearchWindowMessage:
         )
 
         with temporary_stdout():
-            ans = self_ask_with_search.run(input_text)
+            ret = self_ask_with_search.run(input_text)
 
-        return response_strip(ans)
+        return response_strip(ret)
