@@ -29,6 +29,7 @@ dependencies = [
     "PyYAML",
     "prompt_toolkit",
     "pygments",
+    "dynaconf",
 ]
 
 [project.optional-dependencies]

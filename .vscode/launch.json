@@ -10,6 +10,18 @@
             "logToFile": true
         },
         {
+            "name": "Python: CLI Command",
+            "type": "python",
+            "request": "launch",
+            "module": "madia.cli",
+            "args": [
+                "path",
+                "ai fib func python"
+            ],
+            "justMyCode": false,
+            "logToFile": true
+        },
+        {
             "name": "Python: Debug Tests",
             "type": "python",
             "request": "launch",

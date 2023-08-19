@@ -1,16 +1,16 @@
-from prompt_toolkit import PromptSession
-from prompt_toolkit.history import InMemoryHistory
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-
-from functools import lru_cache
-from madia.repl.utils import (
-    safe_shlex_split,
-    delete_stdout_content,
-    detect_and_highlight_code as detect_and_highlight_code_fn,
-)
-from prompt_toolkit.completion import Completer, Completion
-import shlex
 import logging
+import shlex
+from functools import lru_cache
+
+from prompt_toolkit import PromptSession
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.history import InMemoryHistory
+
+from madia.repl.utils import delete_stdout_content
+from madia.repl.utils import \
+    detect_and_highlight_code as detect_and_highlight_code_fn
+from madia.repl.utils import safe_shlex_split
 
 logger = logging.getLogger(__name__)
 
@@ -35,17 +35,12 @@ class BaseRepl:
             if len(text) == 0 or text[-1] == " ":
                 arguments.append("")
 
-            # If there are no arguments or a space was just typed, suggest an empty option.
-            # if not arguments:
-            #     yield Completion("", start_position=0)
-            #     return
-
             # Traverse the completion tree based on parsed arguments.
             cur_tree = self.completion_tree
             for arg in arguments[:-1]:
                 if callable(cur_tree):
                     continue
-                matching_key = next((k for k in cur_tree if k.lower() in arg), None)
+                matching_key = next((k for k in cur_tree if k.lower() == arg), None)
                 if isinstance(cur_tree, dict) and matching_key:
                     cur_tree = cur_tree[matching_key]
                 else:
@@ -57,7 +52,7 @@ class BaseRepl:
             # Check if the current level contains options (dict or list).
             if isinstance(cur_tree, dict):
                 # Special handling for dictionary values that are lists
-                matching_key = next((k for k in cur_tree if k.lower() in prefix), None)
+                matching_key = next((k for k in cur_tree if k.lower() == prefix), None)
                 if matching_key and isinstance(cur_tree[matching_key], list):
                     for option in cur_tree[matching_key]:
                         yield Completion(str(option), start_position=0)
@@ -126,16 +121,34 @@ class BaseRepl:
         args = command_arr[i + 1 :]  # Extract the remaining commands as arguments
         return fn(" ".join(args))
 
+    def present_result(
+        self,
+        result,
+        print_fn_return=None,
+        detect_and_highlight_code=None,
+    ):
+        detect_and_highlight_code = detect_and_highlight_code or (
+            detect_and_highlight_code is None and self.detect_and_highlight_code
+        )
+        print_fn_return = print_fn_return or (
+            print_fn_return is None and self.print_fn_return
+        )
+
+        if detect_and_highlight_code:
+            result = detect_and_highlight_code_fn(result)
+
+        if print_fn_return:
+            if result:
+                print(result)
+            else:
+                print("The function didn't output any text.")
+
     def loop(
         self,
         prompt_message=None,
         print_fn_return=None,
-        delete_stdout_content=None,
         detect_and_highlight_code=None,
     ):
-        delete_stdout_content = delete_stdout_content or (
-            delete_stdout_content is None and self.delete_stdout_content
-        )
         print_fn_return = print_fn_return or (
             print_fn_return is None and self.print_fn_return
         )
@@ -155,20 +168,10 @@ class BaseRepl:
 
                 result = self.execute_command(command)
 
-                if delete_stdout_content:
-                    delete_stdout_content(result)
-
-                if detect_and_highlight_code:
-                    result = detect_and_highlight_code_fn(result)
-
-                if print_fn_return:
-                    if result:
-                        print(result)
-                    else:
-                        print("The function didn't output any text.")
+                self.present_result(result)
 
             except KeyboardInterrupt:
                 print("\n🎹🎹Interrupt, opsie, let's move on!")
             except EOFError:
-                print("\nExiting REPL. Bye 👋 \n")
+                print("\nExiting REPL. Bye 👋🏻\n")
                 break

@@ -1,10 +1,13 @@
+import contextlib
+import logging
 import re
 import shlex
 import sys
+import threading
+
 from pygments import highlight
-from pygments.lexers import get_lexer_by_name, get_all_lexers
 from pygments.formatters import TerminalFormatter
-import logging
+from pygments.lexers import get_all_lexers, get_lexer_by_name
 
 logger = logging.getLogger(__name__)
 
@@ -83,3 +86,40 @@ def safe_shlex_split(text):
 #         cur_tree = cur_tree[cmd]
 
 #     return (" ".join(commands[: i + 1])), (" ".join(commands[i + 1 :]))
+
+
+class StreamWrapper:
+    def __init__(self, original_stream):
+        self.original_stream = original_stream
+        self.lock = threading.Lock()
+        self.buffer = ""
+
+    def write(self, data):
+        with self.lock:
+            self.buffer += data
+            self.original_stream.write(data)
+            self.original_stream.flush()
+
+    def flush(self):
+        with self.lock:
+            self.original_stream.flush()
+
+    def clear(self):
+        with self.lock:
+            print("\033[F\033[K" * self.buffer.count("\n"), end="")
+            self.buffer = ""
+            self.original_stream.flush()
+            # print("")
+
+
+@contextlib.contextmanager
+def temporary_stdout():
+    original_stdout = sys.stdout
+    custom_stream = StreamWrapper(original_stdout)
+    sys.stdout = custom_stream
+    try:
+        yield
+    finally:
+        sys.stdout = original_stdout
+        custom_stream.flush()
+        custom_stream.clear()
