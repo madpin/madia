@@ -30,9 +30,16 @@ dependencies = [
     "prompt_toolkit",
     "pygments",
     "dynaconf",
+    "chromadb",
+    "tiktoken",
+    "pypdf",
+    "cohere",
+    "ai21",
+    "xformers",
 ]
 
 [project.optional-dependencies]
+local_llm = ["transformers", "torch", "torchvision"]
 test = [
     "bandit[toml]==1.7.5",
     "black==23.3.0",
