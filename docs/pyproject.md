@@ -1,4 +1,6 @@
-# pypyroject.toml
+# Pyproject a TOML File
+
+## pyproject.toml
 
 The pyproject.toml is the main configuration file used for the Python project.
 It contains configurations for building, linting, testing, and publishing the Python package.
