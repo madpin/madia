@@ -128,3 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 **/repl_hist*.txt
+
+logs
+# ln -s ~/.madia/logs ./logs
+~madia
+# ln -s ~/.madia/ ./~madia

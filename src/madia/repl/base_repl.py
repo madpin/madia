@@ -1,18 +1,21 @@
 from __future__ import annotations
 
+import os
 import shlex
 from functools import lru_cache
 
 from prompt_toolkit import PromptSession
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import Completer, Completion
-from prompt_toolkit.history import InMemoryHistory
+from prompt_toolkit.history import FileHistory, InMemoryHistory
 
+from madia.config import settings
 from madia.logger import LoggingMixin, get_logger
 from madia.repl.utils import delete_stdout_content
 from madia.repl.utils import \
     detect_and_highlight_code as detect_and_highlight_code_fn
 from madia.repl.utils import safe_shlex_split
+from madia.utils_string import string_to_md5
 
 logger = get_logger(__name__)
 
@@ -34,7 +37,7 @@ class BaseRepl(LoggingMixin):
             # Parse the input text to extract arguments.
             arguments = self._safe_shlex_split_cache(text)
 
-            if len(text) == 0 or text[-1] == " ":
+            if len(text.strip()) == 0 or text[-1] == " ":
                 arguments.append("")
 
             # Traverse the completion tree based on parsed arguments.
@@ -42,9 +45,12 @@ class BaseRepl(LoggingMixin):
             for arg in arguments[:-1]:
                 if callable(cur_tree):
                     continue
-                matching_key = next((k for k in cur_tree if k.lower() == arg), None)
-                if isinstance(cur_tree, dict) and matching_key:
-                    cur_tree = cur_tree[matching_key]
+                matching_key = next(
+                    (k for k in cur_tree.get("child", cur_tree) if k.lower() == arg),
+                    None,
+                )
+                if isinstance(cur_tree.get("child", cur_tree), dict) and matching_key:
+                    cur_tree = cur_tree.get("child", cur_tree)[matching_key]
                 else:
                     return
 
@@ -52,21 +58,34 @@ class BaseRepl(LoggingMixin):
             prefix = arguments[-1]
 
             # Check if the current level contains options (dict or list).
-            if isinstance(cur_tree, dict):
+            if isinstance(cur_tree.get("child", cur_tree), dict):
                 # Special handling for dictionary values that are lists
-                matching_key = next((k for k in cur_tree if k.lower() == prefix), None)
-                if matching_key and isinstance(cur_tree[matching_key], list):
-                    for option in cur_tree[matching_key]:
+                matching_key = next(
+                    (k for k in cur_tree.get("child", cur_tree) if k.lower() == prefix),
+                    None,
+                )
+                if matching_key and isinstance(
+                    cur_tree.get("child", cur_tree)[matching_key], list
+                ):
+                    for option in cur_tree.get("child", cur_tree)[matching_key]:
                         yield Completion(str(option), start_position=0)
                     return
 
                 # Regular handling for other dictionary values
-                options = [o for o in cur_tree if prefix in str(o).lower()]
+                options = [
+                    o
+                    for o in cur_tree.get("child", cur_tree)
+                    if prefix in str(o).lower()
+                ]
                 for option in options:
                     yield Completion(str(option), start_position=-len(prefix))
 
-            elif isinstance(cur_tree, list):
-                options = [o for o in cur_tree if prefix in str(o).lower()]
+            elif isinstance(cur_tree.get("child", cur_tree), list):
+                options = [
+                    o
+                    for o in cur_tree.get("child", cur_tree)
+                    if prefix in str(o).lower()
+                ]
                 for option in options:
                     yield Completion(str(option), start_position=-len(prefix))
 
@@ -82,40 +101,69 @@ class BaseRepl(LoggingMixin):
         detect_and_highlight_code=None,
     ):
         self.default_fn = default_fn
-        self.prompt_message = prompt_message
+        self.prompt_message = prompt_message or ">>> "
         self.detect_and_highlight_code = detect_and_highlight_code or True
         self.print_fn_return = print_fn_return or True
         self.delete_stdout_content = delete_stdout_content or False
         self.completion_dict = completion_dict or {}
+
+        if settings.rep_hist and settings.rep_hist_path:
+            history_fn = FileHistory
+            history_fn_args = os.path.join(
+                os.path.expanduser(settings.rep_hist_path),
+                f"{string_to_md5(self.prompt_message, self.default_fn)}.txt",
+            )
+        else:
+            history_fn = InMemoryHistory
+
         self.session = PromptSession(
             completer=self.CustomCompleter(self.completion_dict),
             history=history_fn(history_fn_args),
             auto_suggest=AutoSuggestFromHistory(),
+            # multiline=True,
         )
 
-        self.default_promt_message = ">>> "
+    def print_help(self, ob, key="", i=1):
+        p = "| " * i
+        print(f"{p}--- Help [{key}] ---")
+        print(f"{p}Name: {ob.get('name', 'No name available.')}")
+        print(f"{p}Short Help: {ob.get('short_help', 'No help available.')}")
+        print(f"{p}Help: {ob.get('help', 'No help available.')}")
+        print(f"{p}Description: {ob.get('description', 'No description available.')}")
+        print(f"{p}Childs:")
+        for key, child_ob in ob.get("child", {}).items():
+            self.print_help(child_ob, key, i + 1)
 
     def execute_command(self, command):
         command_arr = safe_shlex_split(command)
-
+        if not command_arr:
+            return None
         cur_tree = self.completion_dict
+        cur_obj = None
+        prev_obj, prev_key = None, None
         fn = None  # Placeholder for our function
 
         # Loop until we either find a callable or exhaust the commands list
-        for i, cmd in enumerate(command_arr):
-            if cmd not in cur_tree:
-                if self.default_fn:
-                    i = i - 1
-                    fn = self.default_fn
-                    break
-                else:
-                    return f"Invalid command: {cmd}"
+        for i, cur_level in enumerate(command_arr):
+            if cur_level == "?":
+                self.print_help(prev_obj, prev_key)
+                return
 
-            if callable(cur_tree[cmd]):
-                fn = cur_tree[cmd]
-                break  # We've found our function, stop here.
+            if cur_level not in cur_tree:
+                break
 
-            cur_tree = cur_tree[cmd]
+            cur_obj = cur_tree[cur_level]
+            cur_tree = cur_obj.get("child", cur_tree)
+            fn = cur_obj if callable(cur_obj) else cur_obj.get("cmd", None)
+            prev_obj, prev_key = cur_obj, cur_level
+
+        if fn:
+            pass
+        elif self.default_fn:
+            i = i - 1
+            fn = self.default_fn
+        else:
+            return f"Invalid command: {cur_level}"
 
         if not fn:
             return f"'{command}' does not map to a valid function."
@@ -147,7 +195,6 @@ class BaseRepl(LoggingMixin):
 
     def loop(
         self,
-        prompt_message=None,
         print_fn_return=None,
         detect_and_highlight_code=None,
     ):
@@ -160,9 +207,7 @@ class BaseRepl(LoggingMixin):
 
         while True:
             try:
-                command = self.session.prompt(
-                    prompt_message or self.prompt_message or self.default_promt_message
-                )
+                command = self.session.prompt(self.prompt_message)
 
                 if command.lower() in ("exit", "quit"):
                     print("Exiting REPL. See Ya!")

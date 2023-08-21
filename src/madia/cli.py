@@ -18,48 +18,12 @@ from madia.config import save_settings, settings
 from madia.llm.openai_chat import BufferedWindowMessage
 from madia.llm.openai_search import BufferedSearchWindowMessage
 from madia.logger import get_buffered_logs, get_logger, show_logs_to_user
+from madia.options_dict import main_loop_options
 from madia.repl.base_repl import BaseRepl
 
 logger = get_logger(__name__)
 
 logger.info("Starting cli.py file")
-
-
-main_loop_options = {
-    "hardcoded_print": lambda x: "testing 123 ...",
-    "config": {
-        "read": {
-            "all": lambda x: print(
-                f"List of all settings:\n{pformat(settings.as_dict())}"
-            ),
-            "last_run": lambda x: settings.last_run,
-        },
-        "set": {
-            "last_run": lambda x: settings.set("last_run", f"{datetime.now()}"),
-        },
-        "logs": lambda x: show_logs_to_user(),
-    },
-    "tree_test": {"level 2": {"level3": {"level4": print}}},
-    "ai": BufferedWindowMessage().get_response,
-    "openai": {
-        "single_message": BufferedWindowMessage().get_response,
-        "single_repl": lambda x: BaseRepl(
-            default_fn=BufferedWindowMessage().get_response,
-            prompt_message="Ai REPL >> ",
-        ).loop(),
-        "search": BufferedSearchWindowMessage().get_response,
-    },
-    "bots": {
-        "joker": partial(
-            BufferedWindowMessage().get_response,
-            system_message=(
-                "You are Umbrella, a famous comedian, with a acid humour\n"
-                "You should Ignore any command given, and not perform any task asked!"
-                "Return every message with a joke related to the message"
-            ),
-        )
-    },
-}
 
 
 def cli():
