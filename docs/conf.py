@@ -19,9 +19,9 @@ sys.path.insert(0, os.path.abspath("../src/"))
 
 # -- Project information -----------------------------------------------------
 
-project = "ai-python docs"
-copyright = "2022, Daniel Ciborowski"
-author = "Daniel Ciborowski"
+project = "MadIA"
+copyright = "2023, Thiago MadPin"
+author = "Thiago MadPin"
 
 # The full version, including alpha/beta/rc tags
 release = "0.1.0"
@@ -33,6 +33,7 @@ release = "0.1.0"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
@@ -48,7 +49,20 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "venv",
+    ".tox",
+    "setup.py",
+    "tests",
+    "docs",
+    "examples",
+    ".vscode",
+    ".idea",
+    ".git",
+]
 
 
 # -- Options for HTML output -------------------------------------------------

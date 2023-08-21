@@ -1,19 +1,21 @@
-python\_package package
-=======================
-
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   madia.hello_world
+MadIA package
+=============
 
 Submodules
 ----------
 
-python\_package.setup module
-----------------------------
+.. toctree::
+   :maxdepth: 10
+
+   madia.cli
+   madia.config
+   madia.hello_world
+   madia.logger
+   madia.options_dict
+   madia.utils_string
+
+madia.setup module
+------------------
 
 .. automodule:: madia.setup
    :members:
