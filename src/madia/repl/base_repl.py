@@ -21,6 +21,51 @@ logger = get_logger(__name__)
 
 
 class BaseRepl(LoggingMixin):
+    """
+    A base class for creating interactive REPL (Read-Eval-Print Loop) environments.
+
+    This class provides functionality to create an interactive command-line interface
+    where users can input commands, have them evaluated, and see the results printed.
+
+    :param completion_dict: A dictionary containing the command completion tree.
+    :type completion_dict: dict, optional
+    :param default_fn: The default function to execute if the input command doesn't match any known commands.
+    :type default_fn: callable, optional
+    :param history_fn: The history function for storing user input history.
+    :type history_fn: class, optional
+    :param history_fn_args: Additional arguments for initializing the history function.
+    :type history_fn_args: tuple, optional
+    :param prompt_message: The message to display as the prompt.
+    :type prompt_message: str, optional
+    :param print_fn_return: Whether to print the return value of executed functions.
+    :type print_fn_return: bool, optional
+    :param delete_stdout_content: Whether to clear the standard output before printing results.
+    :type delete_stdout_content: bool, optional
+    :param detect_and_highlight_code: Whether to detect and highlight code in the output.
+    :type detect_and_highlight_code: bool, optional
+
+    Usage Example:
+
+    .. code-block:: python
+
+        completion_dict = {
+            "command1": {"cmd": some_function, "description": "This is command 1."},
+            "command2": {"cmd": another_function, "description": "This is command 2."},
+        }
+
+        repl = BaseRepl(
+            completion_dict=completion_dict,
+            default_fn=default_function,
+            history_fn=FileHistory,
+            history_fn_args=("history.txt",),
+            prompt_message=">>> ",
+            print_fn_return=True,
+            detect_and_highlight_code=True,
+        )
+
+        repl.loop()
+    """
+
     class CustomCompleter(Completer):
         def __init__(self, completion_tree):
             super().__init__()
@@ -124,6 +169,16 @@ class BaseRepl(LoggingMixin):
         )
 
     def print_help(self, ob, key="", i=1):
+        """
+        Print help information about a command.
+
+        :param ob: The command object for which to display help information.
+        :type ob: dict
+        :param key: The key of the command object in the completion dictionary.
+        :type key: str
+        :param i: The indentation level for formatting the help display.
+        :type i: int
+        """
         p = "| " * i
         print(f"{p}--- Help [{key}] ---")
         print(f"{p}Name: {ob.get('name', 'No name available.')}")
@@ -135,6 +190,14 @@ class BaseRepl(LoggingMixin):
             self.print_help(child_ob, key, i + 1)
 
     def execute_command(self, command):
+        """
+        Execute the provided command.
+
+        :param command: The input command to execute.
+        :type command: str
+        :return: The result of the executed command.
+        :rtype: str
+        """
         command_arr = safe_shlex_split(command)
         if not command_arr:
             return None
@@ -168,7 +231,7 @@ class BaseRepl(LoggingMixin):
         if not fn:
             return f"'{command}' does not map to a valid function."
 
-        args = command_arr[i + 1 :]  # Extract the remaining commands as arguments
+        args = command_arr[i:]  # Extract the remaining commands as arguments
         return fn(" ".join(args))
 
     def present_result(
@@ -177,6 +240,16 @@ class BaseRepl(LoggingMixin):
         print_fn_return=None,
         detect_and_highlight_code=None,
     ):
+        """
+        Present the result of a command execution.
+
+        :param result: The result to be presented.
+        :type result: str
+        :param print_fn_return: Whether to print the return value of executed functions.
+        :type print_fn_return: bool, optional
+        :param detect_and_highlight_code: Whether to detect and highlight code in the output.
+        :type detect_and_highlight_code: bool, optional
+        """
         detect_and_highlight_code = detect_and_highlight_code or (
             detect_and_highlight_code is None and self.detect_and_highlight_code
         )
@@ -198,6 +271,14 @@ class BaseRepl(LoggingMixin):
         print_fn_return=None,
         detect_and_highlight_code=None,
     ):
+        """
+        Start the interactive REPL loop.
+
+        :param print_fn_return: Whether to print the return value of executed functions.
+        :type print_fn_return: bool, optional
+        :param detect_and_highlight_code: Whether to detect and highlight code in the output.
+        :type detect_and_highlight_code: bool, optional
+        """
         print_fn_return = print_fn_return or (
             print_fn_return is None and self.print_fn_return
         )

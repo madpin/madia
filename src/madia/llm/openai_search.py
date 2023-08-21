@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from langchain.agents import AgentType, Tool, initialize_agent
 from langchain.chat_models import ChatOpenAI
+from langchain.schema.output_parser import OutputParserException
 from langchain.utilities import GoogleSerperAPIWrapper
 
 from madia.llm.utils import FileLoggerHandler, response_strip
@@ -33,11 +34,14 @@ class BufferedSearchWindowMessage(LoggingMixin):
         self_ask_with_search = initialize_agent(
             tools,
             self.llm,
-            agent=AgentType.SELF_ASK_WITH_SEARCH,
+            agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
             verbose=False,
         )
 
         with temporary_stdout():
-            ret = self_ask_with_search.run(input_text)
+            try:
+                ret = self_ask_with_search.run(input_text)
+            except OutputParserException as err:
+                return str(err)
 
         return response_strip(ret)

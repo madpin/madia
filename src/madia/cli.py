@@ -1,11 +1,3 @@
-# # from madia.repl.loops import main_loop, chat_gpt_loop
-# from madia.llm.OpenAI import (
-#     BufferedWindowMessage,
-#     single_message,
-#     # BufferedSearchWindowMessage,
-#     search_llmmath,
-# )
-
 from __future__ import annotations
 
 import logging
@@ -27,7 +19,29 @@ logger.info("Starting cli.py file")
 
 
 def cli():
-    # sys.argv = ["path", "ai fib func python"]
+    """Command line interface for MadIA assistant.
+
+    This is the entrypoint for the MadIA assistant command line. It handles
+    parsing command line arguments and starting the REPL or executing a single
+    command.
+
+    The REPL will be started if no arguments are provided, allowing the user
+    to interactively chat with the assistant.
+
+    If command line arguments are passed, it will execute that command using
+    the assistant and print the result.
+
+    Usage:
+
+    .. code-block:: python
+
+       import madia
+
+       madia.cli() # Starts REPL
+
+       madia.cli("hello") # Executes 'hello' command
+
+    """
 
     if len(sys.argv) == 1:
         print("MadIA REPL with Autocomplete - Type 'exit' or 'quit' to exit.")
@@ -43,7 +57,6 @@ def cli():
                 )
             )
         )
-        # print("")
 
 
 if __name__ == "__main__":

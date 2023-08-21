@@ -12,6 +12,50 @@ from pygments.lexers import get_all_lexers, get_lexer_by_name
 
 
 def detect_and_highlight_code(text):
+    """
+    Detect and highlight code blocks in text.
+
+    This function looks for Markdown-style code blocks in the provided
+    text and highlights them using Pygments. It searches for code blocks
+    of the form:
+
+    ```language
+    code
+    ```
+
+    And highlights the code block using the specified language lexer.
+
+    Parameters
+    ----------
+    text : str
+        The text to search for code blocks.
+
+    Returns
+    -------
+    str
+        The text with detected code blocks highlighted.
+
+    Examples
+    --------
+
+    .. code-block:: python
+
+        from madia.repl.utils import detect_and_highlight_code
+
+        text = "Here is some text with a code block:
+
+        ```python
+        print('Hello World!')
+        ```
+
+        And some more text..."
+
+        print(detect_and_highlight_code(text))
+
+    This would detect the Python code block and highlight it before
+    returning the text.
+
+    """
     code_pattern = re.compile(r"```(.*?)\n(.*?)```", re.DOTALL)
     if not text:
         return ""
@@ -33,6 +77,39 @@ def detect_and_highlight_code(text):
 
 
 def delete_stdout_content(content):
+    """
+    Import statement for this module.
+
+    .. code-block:: python
+
+        import shlex
+
+    Split a string into tokens in a shell-like manner. This is a wrapper around
+    the shlex.split function that handles unmatched quotes more gracefully.
+
+    Parameters
+    ----------
+    text : str
+        The string to split into tokens.
+
+    Returns
+    -------
+    list of str
+        A list of tokens from splitting the input text.
+
+    Raises
+    ------
+    ValueError
+        If there is still an unmatched quote after attempting to fix
+        unclosed quotes.
+
+    Examples
+    --------
+    >>> text = "This is a 'string' with unmatched quote"
+    >>> safe_shlex_split(text)
+    ['This', 'is', 'a', "'string'", 'with', 'unmatched', 'quote']
+
+    """
     if not content:
         return
     number_of_lines = content.count("\n")
@@ -53,6 +130,40 @@ def delete_stdout_content(content):
 
 
 def safe_shlex_split(text):
+    """Splits text into tokens using shlex, fixing unclosed quotes.
+
+    This function splits the input text into tokens using shlex.split(),
+    but catches ValueErrors caused by unmatched quotes and attempts to fix
+    them by adding the quote character to the end of the string before
+    splitting.
+
+    This allows splitting strings with unclosed quotes without raising an
+    exception. For example a string like: 'hello world' will be split into
+    ['hello world"'] instead of raising an error.
+
+    Parameters
+    ----------
+    text : str
+        The string to split into tokens.
+
+    Returns
+    -------
+    list of str
+        A list of tokens from splitting the input text.
+
+    Raises
+    ------
+    ValueError
+        If there is still an unmatched quote after attempting to fix
+        unclosed quotes.
+
+    Examples
+    --------
+    >>> text = "This is a 'string' with unmatched quote"
+    >>> safe_shlex_split(text)
+    ['This', 'is', 'a', "'string'", 'with', 'unmatched', 'quote']
+
+    """
     try:
         return shlex.split(text)
     except ValueError as err:
@@ -69,25 +180,11 @@ def safe_shlex_split(text):
         return shlex.split(text + closest_char)
 
 
-# def extract_command_args(command, options_dict):
-#     commands = safe_shlex_split(command)
-
-#     cur_tree = options_dict
-#     fn = None  # Placeholder for our function
-
-#     # Loop until we either find a callable or exhaust the commands list
-#     for i, cmd in enumerate(commands):
-#         if cmd not in cur_tree:
-#             break
-
-#         if callable(cur_tree[cmd]):
-#             break  # We've found our function, stop here.
-#         cur_tree = cur_tree[cmd]
-
-#     return (" ".join(commands[: i + 1])), (" ".join(commands[i + 1 :]))
-
-
 class StreamWrapper:
+    """
+    Wrapper class for a stream (e.g., stdout) that supports buffering and flushing.
+    """
+
     def __init__(self, original_stream):
         self.original_stream = original_stream
         self.lock = threading.Lock()
@@ -113,6 +210,23 @@ class StreamWrapper:
 
 @contextlib.contextmanager
 def temporary_stdout():
+    """
+    Context manager for temporarily redirecting stdout.
+
+    This context manager redirects the standard output (stdout) to a custom
+    stream wrapper. It allows capturing and manipulating printed content
+    within the context, which can be useful for testing and capturing output.
+
+    Example
+    -------
+    >>> from madia.repl.utils import temporary_stdout
+    >>> with temporary_stdout():
+    ...     print("Hello, world!")
+    ...     print("This is a test.")
+    ...     print("Goodbye!")
+    ... # stdout is back to normal here
+
+    """
     original_stdout = sys.stdout
     custom_stream = StreamWrapper(original_stdout)
     sys.stdout = custom_stream

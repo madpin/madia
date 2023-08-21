@@ -16,6 +16,33 @@ settings = Dynaconf(
 
 
 def save_settings():
+    """Check if the settings are properly configured.
+
+    This function verifies that the required default settings are present
+    and adds any missing keys. It also saves the settings file if any keys
+    were added.
+
+    .. code-block:: python
+
+    from madia.config import check_settings
+
+    check_settings()
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Raises:
+        OSError: If unable to create the settings file or directories.
+
+    Examples:
+    >>> check_settings()
+
+    This will validate and add any missing default settings.
+
+    """
     data = settings.as_dict(env="dev")
 
     # Get the absolute path and directory of the config file
@@ -33,7 +60,27 @@ def save_settings():
 
 
 def check_settings():
-    """Check if settings exist and load defaults if not"""
+    """Check if the settings are properly configured.
+
+    This function verifies that the required default settings are present
+    and adds any missing keys. It also saves the settings file if any keys
+    were added.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Raises:
+        OSError: If unable to create the settings file or directories.
+
+    Examples:
+
+        >>> check_settings()
+
+    This will validate and add any missing default settings.
+    """
     default_settings = {
         "log_path": "~/.madia/logs",
         "rep_hist_path": "~/.madia/repl_history",

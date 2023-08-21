@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 import os
 from logging.handlers import MemoryHandler, RotatingFileHandler
+from typing import Iterator
 
 from madia.config import settings
 
@@ -48,11 +49,29 @@ logging.getLogger().removeHandler(logging.getLogger().handlers[0])
 
 
 # Define a function to get the logger. This is what other modules will use.
-def get_logger(name):
+def get_logger(name: str) -> logging.Logger:
+    """
+    Retrieve a logger instance with the specified name.
+
+    Args:
+        name (str): The name to associate with the logger.
+
+    Returns:
+        logging.Logger: The logger instance associated with the provided name.
+    """
     return logging.getLogger(name)
 
 
-def get_buffered_logs(memory_handler):
+def get_buffered_logs(memory_handler: logging.handlers.MemoryHandler) -> Iterator[str]:
+    """
+    Retrieve buffered log messages from the specified memory handler.
+
+    Args:
+        memory_handler (logging.handlers.MemoryHandler): The memory handler storing buffered logs.
+
+    Yields:
+        Iterator[str]: An iterator yielding formatted log messages from the memory handler.
+    """
     for record in memory_handler.buffer:
         yield logging.getLogger().handlers[0].format(
             record
@@ -60,6 +79,13 @@ def get_buffered_logs(memory_handler):
 
 
 def show_logs_to_user(memory_handler=memory_handler):
+    """
+    Display both buffered logs and logs from file to the user.
+
+    Args:
+        memory_handler (logging.handlers.MemoryHandler, optional): The memory handler storing buffered logs.
+            Defaults to the module's predefined memory_handler.
+    """
     # Show buffered logs
     print("Buffered Logs:")
     for log in get_buffered_logs(memory_handler):
@@ -72,7 +98,21 @@ def show_logs_to_user(memory_handler=memory_handler):
 
 
 class LoggingMixin:
+    """
+    A mixin class for adding logging capabilities to other classes.
+
+    Attributes:
+        logger (logging.Logger): The logger instance associated with the class.
+            The logger name is derived from the class's module and name.
+    """
+
     @property
     def logger(self):
+        """
+        Retrieve the logger instance associated with the class.
+
+        Returns:
+            logging.Logger: The logger instance.
+        """
         name = ".".join([self.__module__, self.__class__.__name__])
         return logging.getLogger(name)
