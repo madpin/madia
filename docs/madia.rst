@@ -1,5 +1,14 @@
-MadIA package
+MadIA Package
 =============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 10
+
+   madia.llm
+   madia.repl
 
 Submodules
 ----------

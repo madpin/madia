@@ -1,7 +1,7 @@
-madIA
+MadIA Module
 ===
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 10
 
    madia
