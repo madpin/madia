@@ -36,13 +36,17 @@ def check_settings():
     """Check if settings exist and load defaults if not"""
     default_settings = {
         "log_path": "~/.madia/logs",
+        "rep_hist_path": "~/.madia/repl_history",
         "log_filename": "app.log",
         "log_filename_full_fp": "app_fp.log",
+        "rep_hist": True,
     }
 
     new_key = False
     for key, value in default_settings.items():
         if not settings.get(key):
+            if "path" in key and "~" in value:
+                os.makedirs(os.path.expanduser(value), exist_ok=True)
             new_key = True
             settings[key] = value
 
