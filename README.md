@@ -25,11 +25,17 @@ But, because not everything are sooo simple, you'll need some environment variab
 setup in your environment:
 
 - OPENAI_API_KEY
+- COHERE_API_KEY
+- HUGGINGFACEHUB_API_TOKEN
+- AI21_API_KEY
 - SERPER_API_KEY
 
 ### How to get them?
 
 - The Open AI one you can get [Here](https://platform.openai.com/account/api-keys)
+- Cohere - LLM Provider [Here](https://dashboard.cohere.com/api-keys)
+- AI21 - LLM Provider [Here](https://studio.ai21.com/account/api-key)
+- HuggingFace the huge platform [Here](https://huggingface.co/settings/tokens)
 - The Serper one (helps with the searches) you can get [Here](https://serper.dev/)
 
 
