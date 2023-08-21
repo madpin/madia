@@ -3,13 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root 'toctree' directive.
 
-Welcome to ai-python docs's documentation!
+Welcome to MadIA documentation!
 ==========================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 5
    :caption: Contents:
+
+   developer
    modules
+   pre-commit-config
+   vscode
+   workflows
 
 
 Indices and tables
