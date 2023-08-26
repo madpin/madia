@@ -3,6 +3,8 @@ from __future__ import annotations
 from functools import partial
 from pprint import pformat
 
+from madia.gradio.chatbot_v1 import cb_fn
+from madia.llm.blip_caption import caption_image_url
 from madia.llm.openai_chat import BufferedWindowMessage
 from madia.llm.openai_search import BufferedSearchWindowMessage
 from madia.logger import show_logs_to_user
@@ -133,6 +135,30 @@ main_loop_options = {
                 "help": "Searches messages from openai",
                 "short_help": "Search messages",
                 "description": "Search messages in openai",
+            },
+        },
+    },
+    "gradio": {
+        "cmd": lambda x: "Gradio base command",
+        "help": "Base for gradio commands",
+        "short_help": "Gradio base",
+        "child": {
+            "v1": {
+                "cmd": cb_fn,
+                "help": "Get a single message from openai",
+                "short_help": "Single message",
+                "description": "Retrieve a single message from openai",
+            },
+        },
+    },
+    "image": {
+        "cmd": lambda x: "LLM with Images",
+        "help": "Base group for Image LLM Functions",
+        "child": {
+            "caption": {
+                "cmd": caption_image_url,
+                "help": "Return caption from a image url",
+                "short_help": "Caption Image URL",
             },
         },
     },

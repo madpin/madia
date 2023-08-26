@@ -35,10 +35,11 @@ dependencies = [
     "cohere==4.20.2",
     "ai21==1.2.5",
     "xformers==0.0.21",
+    "gradio==3.41.2",
 ]
 
 [project.optional-dependencies]
-local_llm = ["transformers", "torch", "torchvision"]
+local_llm = ["transformers==4.32.0", "torch==2.0.1", "torchvision==0.15.2"]
 test = [
     "bandit[toml]==1.7.5",
     "black==23.7.0",
