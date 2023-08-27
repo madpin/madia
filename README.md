@@ -3,6 +3,12 @@ MadIA is yet another attempt to create an AI assistant that doesn't immediately 
 
 We make no guarantees that it won't go rogue at some point, but for now it seems mostly harmless.
 
+<!-- ![Alt text](image.png|width=100) -->
+<p align="center">
+  <img src="image.png" width="600" alt="Image">
+</p>
+
+
 ## Features
 - REPL interface to chat with AI models from OpenAI
 - Support for both chat and search models
