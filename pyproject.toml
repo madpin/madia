@@ -31,7 +31,7 @@ dependencies = [
     "Pygments==2.16.1",
     "dynaconf==3.2.1",
     "chromadb==0.4.7",
-    "pypdf==3.15.3",
+    "pypdf==3.16.1",
     "cohere==4.21",
     "ai21==1.2.5",
     "xformers==0.0.21",
