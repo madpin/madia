@@ -22,7 +22,7 @@ requires-python = ">=3.8.1"
 dynamic = ["version"]
 dependencies = [
     "openai==0.27.9",
-    "pandas==2.0.3",
+    "pandas==2.1.1",
     "langchain==0.0.273",
     "nltk==3.8.1",
     "tiktoken==0.4.0",
