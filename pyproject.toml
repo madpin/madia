@@ -39,7 +39,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-local_llm = ["transformers==4.32.0", "torch==2.0.1", "torchvision==0.15.2"]
+local_llm = ["transformers==4.35.0", "torch==2.0.1", "torchvision==0.15.2"]
 test = [
     "bandit[toml]==1.7.5",
     "black==23.7.0",
